@@ -30,8 +30,10 @@ jobs:
       - run: pnpm --filter @osiris-studio/branding sync:theme
       - run: pnpm --filter @osiris-studio/branding render:icons
       # First-party extensions are bundled into the REH server as built-ins by
-      # build:shell; package their .vsix first.
-      - run: pnpm --filter "./extensions/*" package
+      # build:shell; package their .vsix first. Driven through turbo so the
+      # workspace packages they bundle (container-sync, lm-proxy) are built
+      # before esbuild resolves them.
+      - run: pnpm exec turbo run package --filter="./extensions/*"
       - run: pnpm --filter @osiris-studio/web run prepare:shell
       - run: pnpm --filter @osiris-studio/web build:shell
 

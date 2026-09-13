@@ -32,8 +32,10 @@ jobs:
       - run: pnpm --filter @osiris-studio/branding render:icons
 
       # First-party extensions are bundled into the app as built-ins by
-      # apply-branding.mjs; package their .vsix first.
-      - run: pnpm --filter "./extensions/*" package
+      # apply-branding.mjs; package their .vsix first. Driven through turbo so
+      # the workspace packages they bundle (container-sync, lm-proxy) are built
+      # before esbuild resolves them.
+      - run: pnpm exec turbo run package --filter="./extensions/*"
 
       # linux-x64 additionally emits an AppImage (appimagetool, auto-downloaded),
       # a snap (mksquashfs), a .deb (dpkg-deb, already on any Ubuntu runner), an
