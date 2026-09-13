@@ -45,6 +45,11 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      # Branding's own test suite asserts against the real synced theme files
+      # (osiris-theme's current release), not a local fixture.
+      - name: Sync branding from osiris-theme
+        run: pnpm --filter @osiris-studio/branding sync:theme
+
       - name: Test
         run: pnpm test
 

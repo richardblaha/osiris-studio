@@ -1,0 +1,5 @@
+{
+  "//": "Pinned richardblaha/osiris-theme release. 'latest' resolves via the GitHub Releases API at sync time; pin a tag (e.g. \"v0.1.3\") for reproducibility. Override per-run with OSIRIS_THEME_VERSION.",
+  "repository": "richardblaha/osiris-theme",
+  "release": "latest"
+}

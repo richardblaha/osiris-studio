@@ -2,6 +2,20 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "prepare: desktop",
+      "type": "shell",
+      "command": "pnpm --filter @osiris-studio/branding sync:theme && pnpm --filter @osiris-studio/branding render:icons && pnpm --filter @osiris-studio/desktop run prepare:shell",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+    {
+      "label": "prepare: web",
+      "type": "shell",
+      "command": "pnpm --filter @osiris-studio/branding sync:theme && pnpm --filter @osiris-studio/branding render:icons && pnpm --filter @osiris-studio/web run prepare:shell && pnpm --filter @osiris-studio/web build:shell",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+    {
       "label": "build: osiris-workspace",
       "type": "shell",
       "command": "pnpm --filter osiris-workspace build",

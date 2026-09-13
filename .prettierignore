@@ -10,3 +10,5 @@ coverage
 pnpm-lock.yaml
 *.vsix
 **/test/fixtures/**
+# Helm's {{ }} Go-template syntax isn't valid YAML/JSON — prettier can't parse it.
+deploy/helm/**/templates/**

@@ -1,0 +1,27 @@
+{
+  "name": "Osiris Studio (web preview)",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:22-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  // Needs a Codespaces secret NODE_AUTH_TOKEN (classic PAT, read:packages scope)
+  // for the @richardblaha GitHub Packages registry — see README.md "Contributing".
+  // Runs once, at Codespace creation: `build:shell` is a full upstream gulp
+  // build (several minutes) and is not incremental, so it belongs here — not
+  // in postStartCommand, which fires on every resume too. Once this finishes,
+  // start the server explicitly with `pnpm --filter @osiris-studio/web start`
+  // (kept manual so reattaching to a stopped Codespace doesn't force a rebuild).
+  "postCreateCommand": "corepack enable && pnpm install && pnpm --filter @osiris-studio/branding sync:theme && pnpm --filter @osiris-studio/branding render:icons && pnpm --filter @osiris-studio/web run prepare:shell && pnpm --filter @osiris-studio/web build:shell",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": {
+      "label": "Osiris Studio (web)",
+      "onAutoForward": "openPreview"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]
+    }
+  }
+}

@@ -2,7 +2,7 @@
   "name": "@osiris-studio/branding",
   "displayName": "Osiris Branding",
   "version": "1.0.0",
-  "description": "Osiris Studio branding: icons, colour themes, product.json overlay and shared asset metadata.",
+  "description": "Osiris Studio branding: syncs icons, colour/file-icon themes, the master logo, watermarks and the bundled font from richardblaha/osiris-theme's current release, and carries the product.json overlay + shared asset metadata.",
   "license": "MIT",
   "publisher": "osiris-studio",
   "type": "module",
@@ -15,6 +15,7 @@
     },
     "./product-overlay": "./product.overlay.json",
     "./metadata": "./assets/metadata.json",
+    "./sync-theme": "./scripts/sync-theme.mjs",
     "./render-icons": "./scripts/render-icons.mjs",
     "./apply-to-checkout": "./scripts/apply-to-checkout.mjs",
     "./bundle-extensions": "./scripts/bundle-extensions.mjs"
@@ -22,56 +23,28 @@
   "files": [
     "dist",
     "assets",
-    "themes",
+    "config",
     "product.overlay.json",
     "scripts"
   ],
-  "engines": {
-    "vscode": "^1.90.0"
-  },
-  "categories": [
-    "Themes"
-  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "sync:theme": "node scripts/sync-theme.mjs",
     "render:icons": "node scripts/render-icons.mjs",
     "lint": "eslint src scripts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "package": "vsce package --no-dependencies --out osiris-branding.vsix",
-    "clean": "rimraf dist *.tsbuildinfo *.vsix assets/generated"
-  },
-  "contributes": {
-    "themes": [
-      {
-        "label": "Osiris Dark",
-        "uiTheme": "vs-dark",
-        "path": "./themes/osiris-dark.json"
-      },
-      {
-        "label": "Osiris Light",
-        "uiTheme": "vs",
-        "path": "./themes/osiris-light.json"
-      }
-    ],
-    "configurationDefaults": {
-      "workbench.colorTheme": "Osiris Dark",
-      "editor.fontFamily": "'Fira Code', 'Cascadia Code', Consolas, 'Droid Sans Mono', monospace",
-      "editor.fontLigatures": true,
-      "terminal.integrated.fontFamily": "'Fira Code', monospace"
-    }
+    "clean": "rimraf dist *.tsbuildinfo assets/generated assets/.theme-sync"
   },
   "devDependencies": {
     "@osiris-studio/tsconfig": "workspace:*",
     "@types/node": "^22.7.5",
-    "@vscode/vsce": "^3.1.1",
     "eslint": "^9.12.0",
     "rimraf": "^6.0.1",
     "typescript": "^5.6.3",
     "vitest": "^2.1.3"
   },
   "dependencies": {
-    "@fiahfy/icns": "^0.0.7",
     "png-to-ico": "^3.0.2",
     "sharp": "^0.35.4"
   }

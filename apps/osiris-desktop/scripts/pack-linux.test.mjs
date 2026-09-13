@@ -9,6 +9,7 @@ import {
   debPostinst,
   desktopEntry,
   envScrubPreamble,
+  flatpakManifest,
   rpmPost,
   rpmSpec,
   snapLauncher,
@@ -77,7 +78,10 @@ test('debControl declares the release version, architecture and a Docker alterna
   assert.match(control, /^Architecture: amd64$/m);
   const depends = control.match(/^Depends: (.+)$/m)?.[1];
   assert.ok(depends, 'control file must declare Depends');
-  assert.ok(depends.includes(DOCKER_DEB_ALTERNATIVES.join(' | ')), 'must alternate over Docker/Podman');
+  assert.ok(
+    depends.includes(DOCKER_DEB_ALTERNATIVES.join(' | ')),
+    'must alternate over Docker/Podman',
+  );
   assert.match(depends, /libgtk-3-0/);
   assert.match(depends, /libnss3/);
 });
@@ -106,7 +110,10 @@ test('rpmSpec honours a custom release and architecture', () => {
 
 test('debPostinst and rpmPost both fix up chrome-sandbox permissions under the shared prefix', () => {
   for (const script of [debPostinst(), rpmPost()]) {
-    assert.match(script, new RegExp(`chmod 4755 /${APP_PREFIX}/chrome-sandbox`.replace(/\//g, '\\/')));
+    assert.match(
+      script,
+      new RegExp(`chmod 4755 /${APP_PREFIX}/chrome-sandbox`.replace(/\//g, '\\/')),
+    );
   }
   assert.ok(debPostinst().startsWith('#!/bin/sh\n'));
 });
@@ -115,4 +122,27 @@ test('rpmSpec wires rpmPost into its %post section', () => {
   const spec = rpmSpec({ version: '1.0.0' });
   assert.match(spec, /^%post$/m);
   assert.match(spec, /chmod 4755 \/usr\/share\/osiris\/chrome-sandbox/);
+});
+
+test('flatpakManifest bases on the Electron BaseApp and defaults the app id', () => {
+  const manifest = flatpakManifest();
+  assert.equal(manifest['app-id'], 'io.osiris.Studio');
+  assert.equal(manifest.base, 'org.electronjs.Electron2.BaseApp');
+  assert.equal(manifest.command, 'osiris');
+  assert.ok(manifest['finish-args'].includes('--filesystem=host'));
+  assert.ok(manifest['finish-args'].includes('--share=network'));
+});
+
+test('flatpakManifest honours a custom app id throughout its install commands', () => {
+  const manifest = flatpakManifest({ appId: 'io.example.Custom' });
+  assert.equal(manifest['app-id'], 'io.example.Custom');
+  const commands = manifest.modules[0]['build-commands'].join('\n');
+  assert.match(commands, /io\.example\.Custom\.desktop/);
+  assert.match(commands, /io\.example\.Custom\.png/);
+});
+
+test("flatpakManifest installs the wrapper root's usr/share/osiris tree and symlinks the launcher", () => {
+  const commands = flatpakManifest().modules[0]['build-commands'].join('\n');
+  assert.match(commands, /cp -a usr\/share\/osiris\/\. \/app\/share\/osiris\//);
+  assert.match(commands, /ln -sf \.\.\/share\/osiris\/bin\/osiris \/app\/bin\/osiris/);
 });

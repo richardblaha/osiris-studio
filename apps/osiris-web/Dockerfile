@@ -15,6 +15,7 @@ RUN corepack enable
 COPY . .
 RUN pnpm install --frozen-lockfile --filter @osiris-studio/web... \
     && pnpm --filter @osiris-studio/branding build \
+    && pnpm --filter @osiris-studio/branding sync:theme \
     && pnpm --filter @osiris-studio/branding render:icons \
     && pnpm --filter @osiris-studio/web run prepare:shell \
     && pnpm --filter @osiris-studio/web build:shell

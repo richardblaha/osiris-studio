@@ -122,9 +122,6 @@ importers:
 
   packages/branding:
     dependencies:
-      '@fiahfy/icns':
-        specifier: ^0.0.7
-        version: 0.0.7
       png-to-ico:
         specifier: ^3.0.2
         version: 3.0.2
@@ -138,9 +135,6 @@ importers:
       '@types/node':
         specifier: ^22.7.5
         version: 22.20.1
-      '@vscode/vsce':
-        specifier: ^3.1.1
-        version: 3.9.2
       eslint:
         specifier: ^9.12.0
         version: 9.39.5
@@ -673,14 +667,6 @@ packages:
   '@eslint/plugin-kit@0.4.1':
     resolution: {integrity: sha512-43/qtrDUokr7LJqoF2c3+RInu/t4zfrpYdoSDfYyhg52rwLV6TnOvdG4fXm7IkSB3wErkcmJS9iEhjVtOSEjjA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
-
-  '@fiahfy/icns@0.0.7':
-    resolution: {integrity: sha512-0apAtbUXTU3Opy/Z4h69o53voBa+am8FmdZauyagUMskAVYN1a5yIRk48Sf+tEdBLlefbvqLWPJ4pxr/Y/QtTg==}
-    engines: {node: '>=8'}
-
-  '@fiahfy/packbits@0.0.6':
-    resolution: {integrity: sha512-XuhF/edg+iIvXjkCWgfj6fWtRi/KrEPg2ILXj1l86EN4EssuOiPcLKgkMDr9cL8jTGtVd/MKUWW6Y0/ZVf1PGA==}
-    engines: {node: '>=8'}
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -2314,10 +2300,6 @@ packages:
     engines: {node: '>=20'}
     hasBin: true
 
-  pngjs@6.0.0:
-    resolution: {integrity: sha512-TRzzuFRRmEoSW/p1KVAmiOgPco2Irlah+bGFCeNfJXxxYGwSw7YwAOAcd7X28K/m5bjBWKsC29KyoMfHbypayg==}
-    engines: {node: '>=12.13.0'}
-
   pngjs@7.0.0:
     resolution: {integrity: sha512-LKWqWJRhstyYo9pGvgor/ivk2w94eSjE3RGVuzLGlr3NmD8bf7RcYGze1mNdEHRP6TRP6rMuDHk5t44hnTRyow==}
     engines: {node: '>=14.19.0'}
@@ -3171,13 +3153,6 @@ snapshots:
     dependencies:
       '@eslint/core': 0.17.0
       levn: 0.4.1
-
-  '@fiahfy/icns@0.0.7':
-    dependencies:
-      '@fiahfy/packbits': 0.0.6
-      pngjs: 6.0.0
-
-  '@fiahfy/packbits@0.0.6': {}
 
   '@humanfs/core@0.19.2':
     dependencies:
@@ -4880,8 +4855,6 @@ snapshots:
       '@types/node': 25.9.5
       minimist: 1.2.8
       pngjs: 7.0.0
-
-  pngjs@6.0.0: {}
 
   pngjs@7.0.0: {}
 

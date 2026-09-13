@@ -4,17 +4,17 @@
  * the desktop app, openvscode-server for the web app).
  *
  * Both apply-branding.mjs scripts call copyBrandingIntoCheckout() after they
- * have merged product.json. Icons are rendered on demand from
- * assets/osiris-icon.svg; the Fira Code face is copied in (with an @font-face
- * appended to the workbench stylesheet) so a fresh install needs no system font.
+ * have merged product.json. Every asset placed here comes from `generatedDir`
+ * (`render-icons.mjs`'s output, itself laid out from `sync-theme.mjs`'s pull of
+ * richardblaha/osiris-theme's current release) — this file doesn't know or care
+ * where upstream branding assets actually come from. The Fira Code face is
+ * copied in (with an @font-face appended to the workbench stylesheet) so a
+ * fresh install needs no system font.
  */
 import { cp, mkdir, copyFile, readFile, writeFile, appendFile, readdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { renderIcons, generatedDir } from './render-icons.mjs';
-
-const assetsDir = fileURLToPath(new URL('../assets/', import.meta.url));
 
 const FONT_FACE_MARKER = '/* >>> Osiris bundled Fira Code */';
 
@@ -25,8 +25,8 @@ const FONT_FACE_MARKER = '/* >>> Osiris bundled Fira Code */';
  * `.woff2` loader and errors on an external font `url()`. Appending (rather than a
  * context patch) survives upstream drift; the marker keeps it idempotent.
  */
-async function registerFontFace(checkoutDir) {
-  const woff2 = path.join(assetsDir, 'fonts', 'FiraCode-VF.woff2');
+async function registerFontFace(checkoutDir, icons) {
+  const woff2 = path.join(icons, 'fonts', 'FiraCode-VF.woff2');
   if (!existsSync(woff2)) {
     console.warn('[branding] FiraCode-VF.woff2 missing — skipping @font-face');
     return false;
@@ -212,7 +212,7 @@ export async function copyBrandingIntoCheckout(checkoutDir, { kind }) {
     const lpDir = R('src', 'vs', 'workbench', 'browser', 'parts', 'editor', 'media');
     for (const variant of ['dark', 'light', 'hc']) {
       await place(
-        path.join(assetsDir, `letterpress-${variant}.svg`),
+        path.join(icons, `letterpress-${variant}.svg`),
         path.join(lpDir, `letterpress-${variant}.svg`),
         'letterpress',
       );
@@ -240,11 +240,11 @@ export async function copyBrandingIntoCheckout(checkoutDir, { kind }) {
   // The face itself is embedded straight into the workbench stylesheet by
   // registerFontFace() (data: URI). Only the licence needs to land on disk.
   await place(
-    path.join(assetsDir, 'fonts', 'OFL.txt'),
+    path.join(icons, 'fonts', 'LICENSE'),
     R('ThirdPartyNotices-FiraCode.txt'),
     'font license',
   );
-  await registerFontFace(checkoutDir);
+  await registerFontFace(checkoutDir, icons);
   await renameWorkspaceConfigFolder(checkoutDir);
 
   return { icons };

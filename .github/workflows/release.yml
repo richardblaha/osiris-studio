@@ -6,7 +6,8 @@ on:
 
 permissions:
   contents: write
-  packages: read
+  # write: the web leg pushes the Docker image + Helm chart to GHCR on a release.
+  packages: write
 
 jobs:
   extensions:
@@ -30,9 +31,11 @@ jobs:
 
   web:
     uses: ./.github/workflows/build-web.yml
+    secrets: inherit
 
   desktop:
     uses: ./.github/workflows/build-desktop.yml
+    secrets: inherit
 
   release:
     runs-on: ubuntu-latest
@@ -46,7 +49,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           path: artifacts
-          pattern: "{vsix,osiris-web-server,osiris-desktop-*}"
+          pattern: "{vsix,osiris-web-server,osiris-web-helm-chart,osiris-desktop-*}"
 
       - name: Collect release assets
         run: |
@@ -60,12 +63,19 @@ jobs:
           find artifacts -name 'osiris-web-server.tar.gz' \
             -exec cp -v {} dist/osiris-web-server-linux-x64.tar.gz \;
 
+          # Helm chart (also pushed as an OCI artifact to GHCR by build-web.yml)
+          find artifacts -name 'osiris-web-*.tgz' -exec cp -v {} dist/ \;
+
           # Desktop artifacts (best-effort; some may be absent):
           #   Osiris-<os>-<arch>-<release>.{tar.gz,zip}  — portable archives
           #   Osiris-linux-x64-<release>.AppImage        — portable Linux app
           #   Osiris-linux-x64-<release>.snap            — classic-confinement snap
+          #   Osiris-linux-x64-<release>_amd64.deb       — Debian/Ubuntu package
+          #   Osiris-linux-x64-<release>.x86_64.rpm      — Fedora/RHEL package
+          #   Osiris-linux-x64-<release>.flatpak         — single-file Flatpak bundle
           find artifacts -type f -name 'Osiris-*' \
-            \( -name '*.tar.gz' -o -name '*.zip' -o -name '*.AppImage' -o -name '*.snap' \) \
+            \( -name '*.tar.gz' -o -name '*.zip' -o -name '*.AppImage' -o -name '*.snap' \
+               -o -name '*.deb' -o -name '*.rpm' -o -name '*.flatpak' \) \
             -exec cp -v {} dist/ \;
 
           echo "---- release assets ----"
@@ -82,14 +92,27 @@ jobs:
           body: |
             Osiris Studio ${{ github.ref_name }}
 
-            See `CHANGELOG.md` for the full change list.
+            See `CHANGELOG.md` for the full change list. Branding (colour theme,
+            file icons, app icons, watermarks, font) is synced from the current
+            release of [`richardblaha/osiris-theme`](https://github.com/richardblaha/osiris-theme).
 
             **Assets**
-            - `*.vsix` — first-party extensions (osiris-ai, osiris-workspace)
+            - `*.vsix` — first-party extensions (osiris-workspace)
             - `osiris-web-server-*.tar.gz` — browser-served web server bundle
+              (`node server/index.mjs --port 3000`)
+            - `osiris-web-*.tgz` — Helm chart for the web server (also pushed as an
+              OCI artifact: `helm install osiris-web oci://ghcr.io/${{ github.repository }}/charts/osiris-web --version <ver>`)
+            - Docker: `ghcr.io/${{ github.repository }}/osiris-web:${{ github.ref_name }}`
+              (`docker run -p 3000:3000 ghcr.io/${{ github.repository }}/osiris-web:${{ github.ref_name }}`)
             - `Osiris-<os>-<arch>-*.{tar.gz,zip}` — desktop app (rebranded VSCodium
               prebuilt; portable, unsigned). Linux: extract and run `bin/osiris`.
             - `Osiris-linux-x64-*.AppImage` — portable Linux app (`chmod +x` then
               run; falls back to `--no-sandbox` when user namespaces are locked down).
             - `Osiris-linux-x64-*.snap` — classic-confinement snap
               (`sudo snap install --dangerous --classic Osiris-linux-x64-*.snap`).
+            - `Osiris-linux-x64-*_amd64.deb` — Debian/Ubuntu package
+              (`sudo apt install ./Osiris-linux-x64-*_amd64.deb`).
+            - `Osiris-linux-x64-*.x86_64.rpm` — Fedora/RHEL package
+              (`sudo dnf install ./Osiris-linux-x64-*.x86_64.rpm`).
+            - `Osiris-linux-x64-*.flatpak` — single-file Flatpak bundle, not on
+              Flathub (`flatpak install --user ./Osiris-linux-x64-*.flatpak`).

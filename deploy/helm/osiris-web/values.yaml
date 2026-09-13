@@ -1,0 +1,71 @@
+# Default values for osiris-web.
+
+image:
+  repository: ghcr.io/richardblaha/osiris-studio/osiris-web
+  # Defaults to Chart.appVersion (the release tag) when empty.
+  tag: ""
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+# Server flags (apps/osiris-web/server/index.mjs --help): port/host/token.
+server:
+  port: 3000
+  host: "0.0.0.0"
+  # Connection token. Leave empty to run without one (fine behind an
+  # authenticating proxy/ingress); set via --set server.token=... or a
+  # pre-existing Secret through server.existingTokenSecret instead of committing
+  # a token to values.yaml.
+  token: ""
+  # Name of a Secret with a `token` key, used instead of server.token.
+  existingTokenSecret: ""
+
+env:
+  OSIRIS_TELEMETRY: "off"
+
+service:
+  type: ClusterIP
+  port: 3000
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  host: ""
+  tls: []
+  # - secretName: osiris-web-tls
+  #   hosts: [osiris.example.com]
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    memory: 2Gi
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+podAnnotations: {}
+podSecurityContext:
+  fsGroup: 1001
+securityContext:
+  runAsUser: 1001
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Not persisted by default — a workspace/session created in one pod is gone if
+# it's rescheduled. Set persistence.enabled: true (and provide a storageClass)
+# once per-user workspace persistence is actually needed; out of scope for the
+# initial chart.
+persistence:
+  enabled: false
+  storageClass: ""
+  size: 10Gi
+  accessMode: ReadWriteOnce

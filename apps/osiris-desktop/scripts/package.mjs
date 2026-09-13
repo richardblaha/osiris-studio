@@ -16,6 +16,7 @@ import { packAppImage } from './pack-appimage.mjs';
 import { packSnap } from './pack-snap.mjs';
 import { packDeb } from './pack-deb.mjs';
 import { packRpm } from './pack-rpm.mjs';
+import { packFlatpak } from './pack-flatpak.mjs';
 
 const staged = await listStaged();
 if (staged.length === 0) {
@@ -37,14 +38,15 @@ for (const key of staged) {
     execFileSync('tar', ['czf', out, '-C', stage, '.'], { stdio: 'inherit' });
     report(out);
 
-    // AppImage/snap/deb/rpm are all best-effort: skip (don't fail the repack)
-    // if the host lacks the matching tool (mksquashfs, appimagetool,
-    // dpkg-deb, rpmbuild). CI installs all four.
+    // AppImage/snap/deb/rpm/flatpak are all best-effort: skip (don't fail the
+    // repack) if the host lacks the matching tool (mksquashfs, appimagetool,
+    // dpkg-deb, rpmbuild, flatpak-builder). CI installs all five.
     if (key === 'linux-x64') {
       await tryPack('AppImage', () => packAppImage(stage, path.join(outDir, `${base}.AppImage`)));
       await tryPack('snap', () => packSnap(stage, path.join(outDir, `${base}.snap`)));
       await tryPack('deb', () => packDeb(stage, path.join(outDir, `${base}_amd64.deb`)));
       await tryPack('rpm', () => packRpm(stage, path.join(outDir, `${base}.x86_64.rpm`)));
+      await tryPack('flatpak', () => packFlatpak(stage, path.join(outDir, `${base}.flatpak`)));
     }
   } else {
     const out = path.join(outDir, `${base}.zip`);

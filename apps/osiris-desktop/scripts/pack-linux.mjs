@@ -184,6 +184,63 @@ export const RUNTIME_DEB_DEPENDS = [
   'xdg-utils',
 ];
 
+/**
+ * Flatpak manifest for `flatpak-builder`. Bases on `org.electronjs.Electron2.BaseApp`
+ * — the standard Flathub base for Electron apps, which already wires up zypak
+ * (the sandboxed-Chromium shim) so the app itself needs no sandbox-specific
+ * patches. The `simple` module just installs the already-branded staged tree
+ * (the same wrapper root AppImage/snap wrap — see `buildWrapperRoot`) under
+ * `/app/share/osiris`, mirroring the `.deb`'s `usr/share/osiris` + `usr/bin`
+ * symlink layout; `finish-args` mirrors what VSCodium's own Flathub manifest
+ * grants (network, host filesystem access for opening arbitrary projects,
+ * X11/Wayland/PulseAudio, GPU, and the session-bus name `osiris doctor`'s
+ * keychain integration needs).
+ *
+ * Not intended for Flathub submission — this is packaged locally into a
+ * single-file bundle (`flatpak build-bundle`) attached to the GitHub Release,
+ * the same best-effort treatment as the AppImage/snap above.
+ *
+ * @param {object} opts
+ * @param {string} [opts.appId]  reverse-DNS app id, default `io.osiris.Studio`
+ */
+export function flatpakManifest({ appId = 'io.osiris.Studio' } = {}) {
+  return {
+    'app-id': appId,
+    runtime: 'org.freedesktop.Platform',
+    'runtime-version': '24.08',
+    sdk: 'org.freedesktop.Sdk',
+    base: 'org.electronjs.Electron2.BaseApp',
+    'base-version': '24.08',
+    command: 'osiris',
+    'finish-args': [
+      '--share=network',
+      '--share=ipc',
+      '--socket=x11',
+      '--socket=wayland',
+      '--socket=pulseaudio',
+      '--device=dri',
+      '--filesystem=host',
+      '--talk-name=org.freedesktop.secrets',
+      '--talk-name=org.freedesktop.Notifications',
+    ],
+    modules: [
+      {
+        name: 'osiris',
+        buildsystem: 'simple',
+        'build-commands': [
+          'install -d /app/bin /app/share/osiris /app/share/applications',
+          'install -d /app/share/icons/hicolor/512x512/apps',
+          'cp -a usr/share/osiris/. /app/share/osiris/',
+          'ln -sf ../share/osiris/bin/osiris /app/bin/osiris',
+          `install -Dm644 usr/share/applications/osiris.desktop /app/share/applications/${appId}.desktop`,
+          `install -Dm644 usr/share/icons/hicolor/512x512/apps/osiris.png /app/share/icons/hicolor/512x512/apps/${appId}.png`,
+        ],
+        sources: [{ type: 'dir', path: '.' }],
+      },
+    ],
+  };
+}
+
 /** Same runtime set, RPM package naming (Fedora/RHEL-family). */
 export const RUNTIME_RPM_REQUIRES = [
   'alsa-lib',

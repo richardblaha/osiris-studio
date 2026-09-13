@@ -2,7 +2,26 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Run osiris-workspace",
+      "name": "Run Osiris Desktop",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/apps/osiris-desktop/scripts/dev.mjs",
+      "preLaunchTask": "prepare: desktop",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Run Osiris Web",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/apps/osiris-web/server/index.mjs",
+      "args": ["--port", "3000"],
+      "preLaunchTask": "prepare: web",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Debug osiris-workspace",
       "type": "extensionHost",
       "request": "launch",
       "args": ["--extensionDevelopmentPath=${workspaceFolder}/extensions/osiris-workspace"],

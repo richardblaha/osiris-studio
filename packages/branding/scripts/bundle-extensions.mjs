@@ -1,5 +1,5 @@
 /**
- * Stage the Osiris first-party extensions + colour theme as **built-in**
+ * Stage the Osiris first-party extensions + colour/icon theme as **built-in**
  * extensions inside a distribution.
  *
  * "Built-in" = a plain folder under the app's `extensions/` directory (next to
@@ -11,17 +11,18 @@
  *   - desktop → `<app>/resources/app/extensions/`   (from the VSCodium prebuilt)
  *   - web     → `<reh-bundle>/extensions/`           (from the gulp REH build)
  *
+ * The theme extension it writes is a straight repackaging of the
+ * `osiris-theme-<ver>.vsix` release asset synced by `sync-theme.mjs` — Osiris
+ * Dark / Osiris Light + Osiris File Icons, not a locally hand-built theme.
  * The pure manifest transform ({@link buildThemeManifest}) is unit-tested; the
  * filesystem + `unzip` work is exercised by the build workflows.
  */
 import { execFileSync } from 'node:child_process';
-import { cp, mkdir, mkdtemp, readFile, rm, writeFile, readdir } from 'node:fs/promises';
+import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const brandingRoot = fileURLToPath(new URL('../', import.meta.url));
+import { assertSynced, themeSyncDir } from './sync-theme.mjs';
 
 /** Extension workspace dirs (`extensions/<name>`) shipped in every Osiris build. */
 export const FIRST_PARTY_EXTENSIONS = ['osiris-workspace'];
@@ -30,40 +31,41 @@ export const FIRST_PARTY_EXTENSIONS = ['osiris-workspace'];
 export const THEME_EXTENSION_DIR = 'osiris-theme';
 
 /**
- * The `package.json` for the bundled theme extension, derived from the main
- * `@osiris-studio/branding` manifest so the theme labels / editor defaults stay in one
- * place. Pure.
+ * The `package.json` for the bundled theme extension, derived from the synced
+ * `osiris-theme-<ver>.vsix`'s own manifest so its theme/icon-theme/editor-default
+ * contributions stay verbatim. Pure.
  *
- * @param {object} brandingPkg  parsed `packages/branding/package.json`
+ * @param {object} vsixPkg  parsed `package.json` from the synced vsix's `extension/`
  */
-export function buildThemeManifest(brandingPkg) {
+export function buildThemeManifest(vsixPkg) {
   return {
     name: THEME_EXTENSION_DIR,
     displayName: 'Osiris Theme',
-    description: 'Osiris Studio colour themes and editor defaults.',
-    version: brandingPkg.version,
-    publisher: brandingPkg.publisher ?? 'osiris-studio',
-    license: brandingPkg.license ?? 'MIT',
-    engines: brandingPkg.engines ?? { vscode: '^1.90.0' },
+    description: 'Osiris Studio colour + file-icon themes, synced from richardblaha/osiris-theme.',
+    version: vsixPkg.version,
+    publisher: 'osiris-studio',
+    license: vsixPkg.license ?? 'MIT',
+    engines: vsixPkg.engines ?? { vscode: '^1.90.0' },
     categories: ['Themes'],
-    contributes: brandingPkg.contributes,
+    contributes: vsixPkg.contributes,
   };
 }
 
-/** Write `<extensionsDir>/osiris-theme/` (manifest + `themes/*.json`). */
+/** Write `<extensionsDir>/osiris-theme/` from the synced vsix (manifest + `themes/` + `fileicons/`). */
 export async function writeThemeExtension(extensionsDir, log = console.log) {
-  const brandingPkg = JSON.parse(await readFile(path.join(brandingRoot, 'package.json'), 'utf8'));
+  assertSynced();
+  const vsixDir = path.join(themeSyncDir, 'vsix');
+  const vsixPkg = JSON.parse(await readFile(path.join(vsixDir, 'package.json'), 'utf8'));
   const dest = path.join(extensionsDir, THEME_EXTENSION_DIR);
   await rm(dest, { recursive: true, force: true });
-  await mkdir(path.join(dest, 'themes'), { recursive: true });
+  await mkdir(dest, { recursive: true });
 
   await writeFile(
     path.join(dest, 'package.json'),
-    `${JSON.stringify(buildThemeManifest(brandingPkg), null, 2)}\n`,
+    `${JSON.stringify(buildThemeManifest(vsixPkg), null, 2)}\n`,
   );
-  for (const file of await readdir(path.join(brandingRoot, 'themes'))) {
-    await cp(path.join(brandingRoot, 'themes', file), path.join(dest, 'themes', file));
-  }
+  await cp(path.join(vsixDir, 'themes'), path.join(dest, 'themes'), { recursive: true });
+  await cp(path.join(vsixDir, 'fileicons'), path.join(dest, 'fileicons'), { recursive: true });
   log(`[branding] built-in theme → extensions/${THEME_EXTENSION_DIR}`);
 }
 
@@ -94,7 +96,12 @@ export async function stageVsixAsBuiltin(vsixPath, extensionsDir, dirName, log =
  * @param {boolean} [opts.build]         `pnpm --filter <name> package` a missing `.vsix`
  * @param {(m: string) => void} [opts.log]
  */
-export async function bundleBuiltinExtensions({ repoRoot, extensionsDir, build = false, log = console.log }) {
+export async function bundleBuiltinExtensions({
+  repoRoot,
+  extensionsDir,
+  build = false,
+  log = console.log,
+}) {
   if (!existsSync(extensionsDir)) {
     throw new Error(`[branding] built-in extensions dir not found: ${extensionsDir}`);
   }
@@ -102,7 +109,8 @@ export async function bundleBuiltinExtensions({ repoRoot, extensionsDir, build =
     const extDir = path.join(repoRoot, 'extensions', name);
     const vsix = path.join(extDir, `${name}.vsix`);
     if (!existsSync(vsix)) {
-      if (!build) throw new Error(`[branding] ${name}.vsix missing — run \`pnpm --filter ${name} package\``);
+      if (!build)
+        throw new Error(`[branding] ${name}.vsix missing — run \`pnpm --filter ${name} package\``);
       log(`[branding] packaging ${name}…`);
       execFileSync('pnpm', ['--filter', name, 'package'], { cwd: repoRoot, stdio: 'inherit' });
     }
