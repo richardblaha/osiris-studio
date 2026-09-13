@@ -24,14 +24,14 @@ import { fileURLToPath } from 'node:url';
 const brandingRoot = fileURLToPath(new URL('../', import.meta.url));
 
 /** Extension workspace dirs (`extensions/<name>`) shipped in every Osiris build. */
-export const FIRST_PARTY_EXTENSIONS = ['osiris-ai', 'osiris-workspace'];
+export const FIRST_PARTY_EXTENSIONS = ['osiris-workspace'];
 
 /** Folder name of the generated built-in theme extension. */
 export const THEME_EXTENSION_DIR = 'osiris-theme';
 
 /**
  * The `package.json` for the bundled theme extension, derived from the main
- * `@osiris/branding` manifest so the theme labels / editor defaults stay in one
+ * `@osiris-studio/branding` manifest so the theme labels / editor defaults stay in one
  * place. Pure.
  *
  * @param {object} brandingPkg  parsed `packages/branding/package.json`
@@ -40,9 +40,9 @@ export function buildThemeManifest(brandingPkg) {
   return {
     name: THEME_EXTENSION_DIR,
     displayName: 'Osiris Theme',
-    description: 'Osiris IDE colour themes and editor defaults.',
+    description: 'Osiris Studio colour themes and editor defaults.',
     version: brandingPkg.version,
-    publisher: brandingPkg.publisher ?? 'osiris-ide',
+    publisher: brandingPkg.publisher ?? 'osiris-studio',
     license: brandingPkg.license ?? 'MIT',
     engines: brandingPkg.engines ?? { vscode: '^1.90.0' },
     categories: ['Themes'],

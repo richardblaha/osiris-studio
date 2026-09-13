@@ -3,7 +3,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
-import { copyBrandingIntoCheckout } from '@osiris/branding/apply-to-checkout';
+import { copyBrandingIntoCheckout } from '@osiris-studio/branding/apply-to-checkout';
 import { mergeDeep, readProductOverlay, readUpstreamConfig } from './lib.mjs';
 
 const { checkoutDir } = await readUpstreamConfig();

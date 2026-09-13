@@ -1,5 +1,5 @@
 {
-  "extends": "@osiris/tsconfig/extension.json",
+  "extends": "@osiris-studio/tsconfig/extension.json",
   "compilerOptions": {
     "jsx": "react-jsx",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],

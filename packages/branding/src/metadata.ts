@@ -36,9 +36,9 @@ export interface OsirisMetadata {
 
 export const metadata: OsirisMetadata = {
   productName: 'Osiris',
-  productNameLong: 'Osiris IDE',
+  productNameLong: 'Osiris Studio',
   applicationName: 'osiris',
-  bundleId: 'io.osiris.ide',
+  bundleId: 'io.osiris.studio',
   urlProtocol: 'osiris',
   version: '0.1.0',
   colors: {
@@ -57,9 +57,9 @@ export const metadata: OsirisMetadata = {
     ui: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Ubuntu', 'Droid Sans', sans-serif",
   },
   links: {
-    homepage: 'https://osiris-ide.org',
-    repository: 'https://github.com/osiris-ide/osiris',
-    issues: 'https://github.com/osiris-ide/osiris/issues',
+    homepage: 'https://osiris-studio.org',
+    repository: 'https://github.com/osiris-studio/osiris',
+    issues: 'https://github.com/osiris-studio/osiris/issues',
     marketplace: 'https://open-vsx.org',
   },
 };

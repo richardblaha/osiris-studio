@@ -7,8 +7,8 @@ import {
 } from '../scripts/bundle-extensions.mjs';
 
 describe('bundle-extensions', () => {
-  it('ships osiris-ai and osiris-workspace as first-party', () => {
-    expect(FIRST_PARTY_EXTENSIONS).toEqual(['osiris-ai', 'osiris-workspace']);
+  it('ships osiris-workspace as first-party', () => {
+    expect(FIRST_PARTY_EXTENSIONS).toEqual(['osiris-workspace']);
   });
 
   it('buildThemeManifest carries the branding themes + editor defaults', async () => {
@@ -18,7 +18,7 @@ describe('bundle-extensions', () => {
     const manifest = buildThemeManifest(brandingPkg);
 
     expect(manifest.name).toBe(THEME_EXTENSION_DIR);
-    expect(manifest.publisher).toBe('osiris-ide');
+    expect(manifest.publisher).toBe('osiris-studio');
     expect(manifest.version).toBe(brandingPkg.version);
     expect(manifest.contributes.themes.map((t: { label: string }) => t.label)).toEqual([
       'Osiris Dark',

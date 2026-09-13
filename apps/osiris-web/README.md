@@ -1,15 +1,15 @@
-# @osiris/web
+# @osiris-studio/web
 
-Browser-served Osiris IDE runtime, following the **OpenVSCode Server** pattern.
-Like `@osiris/desktop`, it clones a pinned upstream tag at build time and applies
+Browser-served Osiris Studio runtime, following the **OpenVSCode Server** pattern.
+Like `@osiris-studio/desktop`, it clones a pinned upstream tag at build time and applies
 the Osiris `product.json` overlay — no VS Code source is vendored.
 
 ## Run locally
 
 ```bash
 # system deps (Debian/Ubuntu): pkg-config libx11-dev libxkbfile-dev libsecret-1-dev libkrb5-dev
-pnpm --filter @osiris/web run prepare:shell    # clone gitpod-io/openvscode-server @ config/upstream.json + brand
-pnpm --filter @osiris/web build:shell          # build the web server bundle (heavy, ~30 min)
+pnpm --filter @osiris-studio/web run prepare:shell    # clone gitpod-io/openvscode-server @ config/upstream.json + brand
+pnpm --filter @osiris-studio/web build:shell          # build the web server bundle (heavy, ~30 min)
 node apps/osiris-web/server/index.mjs --port 3000
 # open http://localhost:3000
 ```

@@ -1,7 +1,7 @@
 /**
  * A minimal `docker` CLI wrapper — the extension host only needs to find a
  * DevContainer by label and wake it. Heavier Docker work (freeze/thaw, images,
- * volumes) lives in `@osiris/container-sync`, used by the desktop orchestrator.
+ * volumes) lives in `@osiris-studio/container-sync`, used by the desktop orchestrator.
  */
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';

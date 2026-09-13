@@ -17,7 +17,7 @@
 `assets/generated/`:
 
 ```bash
-pnpm --filter @osiris/branding render:icons
+pnpm --filter @osiris-studio/branding render:icons
 ```
 
 | Output | Target |
@@ -30,7 +30,7 @@ pnpm --filter @osiris/branding render:icons
 | `electron/icon.{ico,icns}`, `electron/icons/*.png` | `apps/osiris-desktop/build/*` for electron-builder |
 
 `apps/*/scripts/apply-branding.mjs` call `render-icons` automatically (via
-`@osiris/branding/apply-to-checkout`) when `generated/` is absent, then copy each
+`@osiris-studio/branding/apply-to-checkout`) when `generated/` is absent, then copy each
 file to its upstream path and append the Fira Code `@font-face` to the workbench
 stylesheet. CI (`build-desktop`, `build-web`) runs `render:icons` explicitly
 before `prepare:shell`.

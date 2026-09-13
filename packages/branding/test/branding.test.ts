@@ -12,7 +12,7 @@ describe('branding metadata', () => {
   it('product overlay parses and drops the $comment key', async () => {
     const overlay = await loadProductOverlay();
     expect(overlay.$comment).toBeUndefined();
-    expect(overlay.nameLong).toBe('Osiris IDE');
+    expect(overlay.nameLong).toBe('Osiris Studio');
     expect(overlay.applicationName).toBe(metadata.applicationName);
     expect(overlay.enableTelemetry).toBe(false);
   });

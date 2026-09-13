@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "@osiris/tsconfig/react",
+  "display": "@osiris-studio/tsconfig/react",
   "extends": "./base.json",
   "compilerOptions": {
     "lib": ["ES2022", "DOM", "DOM.Iterable"],

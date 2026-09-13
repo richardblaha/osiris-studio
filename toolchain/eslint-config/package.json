@@ -1,5 +1,5 @@
 {
-  "name": "@osiris/eslint-config",
+  "name": "@osiris-studio/eslint-config",
   "version": "0.1.0",
   "private": true,
   "description": "Shared flat ESLint configuration for the Osiris monorepo.",
@@ -12,11 +12,11 @@
     "index.mjs"
   ],
   "scripts": {
-    "build": "echo \"@osiris/eslint-config: nothing to build\"",
-    "lint": "echo \"@osiris/eslint-config: nothing to lint\"",
-    "typecheck": "echo \"@osiris/eslint-config: nothing to typecheck\"",
-    "test": "echo \"@osiris/eslint-config: no tests\"",
-    "clean": "echo \"@osiris/eslint-config: nothing to clean\""
+    "build": "echo \"@osiris-studio/eslint-config: nothing to build\"",
+    "lint": "echo \"@osiris-studio/eslint-config: nothing to lint\"",
+    "typecheck": "echo \"@osiris-studio/eslint-config: nothing to typecheck\"",
+    "test": "echo \"@osiris-studio/eslint-config: no tests\"",
+    "clean": "echo \"@osiris-studio/eslint-config: nothing to clean\""
   },
   "dependencies": {
     "@eslint/js": "^9.12.0",

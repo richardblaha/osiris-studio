@@ -5,7 +5,7 @@ import globals from 'globals';
 
 /**
  * Shared flat ESLint config for every Osiris workspace.
- * Consumers do: `import osiris from '@osiris/eslint-config'; export default [...osiris];`
+ * Consumers do: `import osiris from '@osiris-studio/eslint-config'; export default [...osiris];`
  *
  * @type {import('eslint').Linter.Config[]}
  */

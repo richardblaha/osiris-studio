@@ -1,7 +1,7 @@
 /**
  * The `osiris-devcontainer` remote authority. A workspace Osiris opens always
  * carries `vscode-remote://osiris-devcontainer+<hash>/workspaces/<name>`, where
- * `<hash>` is the stable per-folder key from `@osiris/container-sync`.
+ * `<hash>` is the stable per-folder key from `@osiris-studio/container-sync`.
  */
 export const OSIRIS_AUTHORITY = 'osiris-devcontainer';
 

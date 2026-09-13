@@ -27,8 +27,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
         env:
           NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN }}
-      - run: pnpm --filter @osiris/branding build
-      - run: pnpm --filter @osiris/branding render:icons
+      - run: pnpm --filter @osiris-studio/branding build
+      - run: pnpm --filter @osiris-studio/branding render:icons
 
       # First-party extensions are bundled into the app as built-ins by
       # apply-branding.mjs; package their .vsix first.

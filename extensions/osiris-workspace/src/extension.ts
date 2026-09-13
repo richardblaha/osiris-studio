@@ -3,7 +3,6 @@ import { existsSync } from 'node:fs';
 import { resolve as resolvePath } from 'node:path';
 import * as vscode from 'vscode';
 import { createLogger } from '@richardblaha/shared-core';
-import { SessionClient, type SessionPhase } from '@richardblaha/protocol';
 import {
   OSIRIS_AUTHORITY,
   buildFolderUri,
@@ -11,7 +10,6 @@ import {
   parseAuthorityHash,
 } from './authority.js';
 import { resolveDevContainerEndpoint } from './resolver.js';
-import { resolveServerConfig } from './server-config.js';
 import { upDevContainer } from './devcontainer-cli.js';
 import { RecentProjectsStore } from './recent-projects.js';
 import { showStartView } from './start-view.js';
@@ -25,13 +23,6 @@ import { taskModelEnv, unsetTaskClasses } from './model-config.js';
 const log = createLogger('workspace');
 
 const DEFAULT_SECRET_ENV_KEYS = ['OSIRIS_AI_API_KEY', 'ANTHROPIC_API_KEY', 'OPENAI_API_KEY'];
-
-/** workspaceState key: the osiris-server sessionId backing the open workspace, if any. */
-const SESSION_ID_KEY = 'osiris.sessionId';
-
-function setSessionPhaseContext(phase: SessionPhase | 'none'): void {
-  void vscode.commands.executeCommand('setContext', 'osiris.sessionPhase', phase);
-}
 
 function config() {
   return vscode.workspace.getConfiguration('osiris');
@@ -58,9 +49,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       }),
     );
   }
-
-  const status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 10);
-  context.subscriptions.push(status);
 
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(
@@ -92,12 +80,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('osiris.configureModels', () =>
       showStartView(context, startDeps, { focus: 'models' }),
     ),
-    vscode.commands.registerCommand('osiris.workspace.suspendSession', () =>
-      setSessionPhase(context, status, 'suspend'),
-    ),
-    vscode.commands.registerCommand('osiris.workspace.resumeSession', () =>
-      setSessionPhase(context, status, 'resume'),
-    ),
     vscode.commands.registerCommand('osiris.agent.setApiKey', () => setAgentApiKey(context)),
     vscode.commands.registerCommand('osiris.lm.status', () => showLmStatus(context)),
     vscode.commands.registerCommand('osiris.crew.run', () => runCrew()),
@@ -116,16 +98,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     );
   }
 
-  const cachedPhase = context.workspaceState.get<SessionPhase>(`${SESSION_ID_KEY}.phase`);
-  setSessionPhaseContext(cachedPhase ?? 'none');
-  updateStatus(status, cachedPhase);
-
   const remote = isOsirisRemote(vscode.env.remoteName);
   const hasFolder = (vscode.workspace.workspaceFolders?.length ?? 0) > 0;
 
   if (!remote && !hasFolder && !vscode.env.remoteName) {
     await handleEmptyWindow(context, recent);
-  } else if (config().get<boolean>('devcontainer.enforce', true) && !remote && hasFolder) {
+  } else if (!remote && hasFolder) {
     await guardLocalWindow(context, recent);
   }
 }
@@ -173,29 +151,6 @@ export function deactivate(): void {
   log.info('deactivating osiris-workspace');
 }
 
-function updateStatus(item: vscode.StatusBarItem, phase: SessionPhase | undefined): void {
-  const label: Record<SessionPhase, string> = {
-    Pending: '$(sync~spin) Osiris: Pending',
-    Running: '$(vm-running) Osiris: Running',
-    Suspending: '$(sync~spin) Osiris: Suspending',
-    Suspended: '$(debug-pause) Osiris: Suspended',
-    Resuming: '$(sync~spin) Osiris: Resuming',
-    Terminating: '$(sync~spin) Osiris: Terminating',
-  };
-  if (!phase) {
-    item.text = '$(circle-outline) Osiris: No session';
-    item.command = 'osiris.workspace.resumeSession';
-    item.tooltip = 'No Osiris session for this workspace yet — click to create and start one';
-    item.show();
-    return;
-  }
-  item.text = label[phase];
-  item.command =
-    phase === 'Suspended' ? 'osiris.workspace.resumeSession' : 'osiris.workspace.suspendSession';
-  item.tooltip = 'Osiris session state — click to suspend/resume';
-  item.show();
-}
-
 /** Status-bar nudge while some task classes still fall back to the default local model. */
 function refreshModelsStatus(item: vscode.StatusBarItem): void {
   const unset = unsetTaskClasses(vscode.workspace.getConfiguration('osiris.models'));
@@ -240,6 +195,11 @@ async function nudgeIncompleteModels(): Promise<void> {
   }
 }
 
+/**
+ * Osiris only ever edits a folder inside its DevContainer. There is no
+ * "continue anyway" — dismissing the modal (Escape, or clicking outside it)
+ * just re-prompts, so the only way out is to actually reopen in a container.
+ */
 async function guardLocalWindow(
   context: vscode.ExtensionContext,
   recent: RecentProjectsStore,
@@ -247,17 +207,16 @@ async function guardLocalWindow(
   const folder = vscode.workspace.workspaceFolders?.[0];
   if (!folder) return;
 
-  const choice = await vscode.window.showWarningMessage(
-    'This folder is open outside an Osiris DevContainer. The agent and workspace tasks will not run here.',
-    { modal: true },
-    'Reopen in DevContainer',
-    'Close Folder',
-  );
-
-  if (choice === 'Reopen in DevContainer') {
-    await openInDevContainer(context, recent, folder.uri.fsPath);
-  } else if (choice === 'Close Folder') {
-    await vscode.commands.executeCommand('workbench.action.closeFolder');
+  for (;;) {
+    const choice = await vscode.window.showWarningMessage(
+      'Osiris only opens folders inside a DevContainer. Reopen this folder in its Osiris DevContainer to continue.',
+      { modal: true },
+      'Reopen in DevContainer',
+    );
+    if (choice === 'Reopen in DevContainer') {
+      await openInDevContainer(context, recent, folder.uri.fsPath);
+      return;
+    }
   }
 }
 
@@ -389,63 +348,6 @@ async function setAgentApiKey(context: vscode.ExtensionContext): Promise<void> {
   }
 }
 
-/**
- * Suspend/resume the osiris-server session backing this workspace, creating
- * one on first use (lazily — `osiris session create`/`project register` are
- * a separate, not-yet-built CLI/UX concern; this mirrors the same "create on
- * first interaction" shortcut the old handover flow used).
- */
-async function setSessionPhase(
-  context: vscode.ExtensionContext,
-  status: vscode.StatusBarItem,
-  action: 'suspend' | 'resume',
-): Promise<void> {
-  const server = resolveServerConfig({
-    url: config().get('server.url'),
-    tokenEnv: config().get('server.tokenEnv'),
-  });
-  if (!server) {
-    void vscode.window.showErrorMessage('Set "osiris.server.url" to manage this workspace\'s session.');
-    return;
-  }
-  if (!server.token) {
-    void vscode.window.showErrorMessage(
-      `No Osiris Server token — set the ${String(config().get('server.tokenEnv'))} environment variable.`,
-    );
-    return;
-  }
-
-  const folder = vscode.workspace.workspaceFolders?.[0];
-  if (!folder) return;
-
-  const client = new SessionClient({ baseUrl: server.baseUrl, token: server.token });
-
-  await vscode.window.withProgress(
-    { location: vscode.ProgressLocation.Notification, title: `Osiris: ${action}`, cancellable: false },
-    async () => {
-      try {
-        let sessionId = context.workspaceState.get<string>(SESSION_ID_KEY);
-        if (!sessionId) {
-          const created = await client.createSession({ projectName: folder.name });
-          sessionId = created.sessionId;
-          await context.workspaceState.update(SESSION_ID_KEY, sessionId);
-        }
-
-        const descriptor =
-          action === 'suspend'
-            ? await client.suspendSession(sessionId)
-            : await client.resumeSession(sessionId);
-
-        await context.workspaceState.update(`${SESSION_ID_KEY}.phase`, descriptor.phase);
-        setSessionPhaseContext(descriptor.phase);
-        updateStatus(status, descriptor.phase);
-      } catch (err) {
-        void vscode.window.showErrorMessage(`Osiris ${action} failed: ${(err as Error).message}`);
-      }
-    },
-  );
-}
-
 async function tryExecuteCommand<T>(command: string, ...args: unknown[]): Promise<T | undefined> {
   const all = await vscode.commands.getCommands(true);
   if (!all.includes(command)) {
@@ -457,7 +359,7 @@ async function tryExecuteCommand<T>(command: string, ...args: unknown[]): Promis
   return vscode.commands.executeCommand<T>(command, ...args);
 }
 
-/** Mirror of `@osiris/container-sync`'s `devcontainerHash` (no dockerode dep here). */
+/** Mirror of `@osiris-studio/container-sync`'s `devcontainerHash` (no dockerode dep here). */
 function localHash(absolutePath: string): string {
   return createHash('sha256').update(resolvePath(absolutePath)).digest('hex').slice(0, 12);
 }

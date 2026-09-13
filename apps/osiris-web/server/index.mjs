@@ -35,7 +35,7 @@ export function parseArgs(argv) {
 const BANNER = String.raw`
    ____       _      _
   / __ \___  (_)____(_)____
- / / / / __ \/ / ___/ / ___/   Osiris IDE — web runtime
+ / / / / __ \/ / ___/ / ___/   Osiris Studio — web runtime
 / /_/ / /_/ / / /  / (__  )    telemetry: off
 \____/\____/_/_/  /_/____/
 `;
@@ -51,8 +51,8 @@ Usage: osiris-web [options] [-- <upstream server args>]
   -h, --help       show this help
 
 Prepare + build the runtime first:
-  pnpm --filter @osiris/web run prepare:shell
-  pnpm --filter @osiris/web build:shell
+  pnpm --filter @osiris-studio/web run prepare:shell
+  pnpm --filter @osiris-studio/web build:shell
 `);
 }
 
@@ -74,7 +74,7 @@ async function main() {
       process.env.OSIRIS_SERVER_DATA_DIR ??
       process.env.VSCODE_SERVER_DATA_DIR ??
       path.join(os.homedir(), '.osiris-server'),
-    OSIRIS_PRODUCT_NAME: 'Osiris IDE',
+    OSIRIS_PRODUCT_NAME: 'Osiris Studio',
   };
 
   const { checkoutDir } = await readUpstreamConfig();
@@ -82,7 +82,7 @@ async function main() {
 
   if (!entrypoint) {
     console.error(
-      '[osiris-web] no built server found. Run `pnpm --filter @osiris/web run prepare:shell && pnpm --filter @osiris/web build:shell` first.',
+      '[osiris-web] no built server found. Run `pnpm --filter @osiris-studio/web run prepare:shell && pnpm --filter @osiris-studio/web build:shell` first.',
     );
     process.exitCode = 1;
     return;

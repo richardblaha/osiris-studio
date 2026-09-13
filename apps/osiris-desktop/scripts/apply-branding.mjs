@@ -12,8 +12,8 @@ import { execFileSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { copyFile, readFile, rename, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { generatedDir, renderIcons } from '@osiris/branding/render-icons';
-import { bundleBuiltinExtensions } from '@osiris/branding/bundle-extensions';
+import { generatedDir, renderIcons } from '@osiris-studio/branding/render-icons';
+import { bundleBuiltinExtensions } from '@osiris-studio/branding/bundle-extensions';
 import { findAppLayout, listStaged, mergeDeep, readProductOverlay, repoRoot, stageDir } from './lib.mjs';
 import {
   binaryRenames,
@@ -24,7 +24,7 @@ import {
 
 const stagedKeys = await listStaged();
 if (stagedKeys.length === 0) {
-  throw new Error('Nothing staged. Run: pnpm --filter @osiris/desktop run prepare:shell');
+  throw new Error('Nothing staged. Run: pnpm --filter @osiris-studio/desktop run prepare:shell');
 }
 
 if (!existsSync(path.join(generatedDir, 'linux', 'code.png'))) await renderIcons();
@@ -91,10 +91,10 @@ async function brandMacBundle(stage, layout) {
   const plist = path.join(layout.appDir, 'Contents', 'Info.plist');
   if (existsSync(plist)) {
     const xml = (await readFile(plist, 'utf8'))
-      .replace(/(<key>CFBundleDisplayName<\/key>\s*<string>)[^<]*/, '$1Osiris IDE')
+      .replace(/(<key>CFBundleDisplayName<\/key>\s*<string>)[^<]*/, '$1Osiris Studio')
       .replace(/(<key>CFBundleName<\/key>\s*<string>)[^<]*/, '$1Osiris');
     await writeFile(plist, xml);
-    console.log('[osiris-desktop] darwin: Info.plist → Osiris IDE');
+    console.log('[osiris-desktop] darwin: Info.plist → Osiris Studio');
   }
   const osiris = path.join(stage, 'Osiris.app');
   if (path.basename(layout.appDir) !== 'Osiris.app') {

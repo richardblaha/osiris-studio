@@ -41,7 +41,7 @@ export async function readProductOverlay() {
   const require = createRequire(import.meta.url);
   let overlayPath;
   try {
-    overlayPath = require.resolve('@osiris/branding/product-overlay');
+    overlayPath = require.resolve('@osiris-studio/branding/product-overlay');
   } catch {
     overlayPath = path.join(repoRoot, 'packages', 'branding', 'product.overlay.json');
   }

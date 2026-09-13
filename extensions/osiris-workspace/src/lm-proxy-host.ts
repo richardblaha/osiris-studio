@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 import type * as vscode from 'vscode';
-import { startLmProxy, type LmProxyHandle } from '@osiris/lm-proxy';
+import { startLmProxy, type LmProxyHandle } from '@osiris-studio/lm-proxy';
 import { createLogger } from '@richardblaha/shared-core';
 import { createVscodeLmBridge, hasLanguageModelApi } from './lm-bridge.js';
 

@@ -1,14 +1,14 @@
-# @osiris/desktop
+# @osiris-studio/desktop
 
-The Osiris IDE desktop app. It **does not build VS Code from source** — it
+The Osiris Studio desktop app. It **does not build VS Code from source** — it
 downloads a pinned [VSCodium](https://github.com/VSCodium/vscodium) prebuilt and
 rebrands it (product identity, icons, `codium` → `osiris`).
 
 ## Pipeline
 
 ```bash
-pnpm --filter @osiris/desktop run prepare:shell   # fetch VSCodium prebuilt(s) + rebrand in place
-pnpm --filter @osiris/desktop package             # repack → dist_electron/Osiris-<platform>-<release>.*
+pnpm --filter @osiris-studio/desktop run prepare:shell   # fetch VSCodium prebuilt(s) + rebrand in place
+pnpm --filter @osiris-studio/desktop package             # repack → dist_electron/Osiris-<platform>-<release>.*
 ```
 
 `prepare:shell` with no argument does this host's platform; CI passes an explicit
@@ -17,7 +17,7 @@ key (`node scripts/fetch-prebuilt.mjs darwin-arm64`).
 `apply-branding.mjs` also drops the Osiris first-party extensions — `osiris-ai`,
 `osiris-workspace` and a generated `osiris-theme` (the `Osiris Dark`/`Osiris Light`
 themes + editor defaults) — into `resources/app/extensions/` as **built-ins**, via
-`@osiris/branding/bundle-extensions`. It packages each `<name>.vsix` on demand, so
+`@osiris-studio/branding/bundle-extensions`. It packages each `<name>.vsix` on demand, so
 `pnpm --filter "./extensions/*" package` is only needed explicitly in CI.
 
 `package` emits a portable archive per platform (`.tar.gz` on Linux, `.zip` on
@@ -59,7 +59,7 @@ doctor` has to detect those missing at runtime instead.
 ## Notes
 
 - `.build/` and `dist_electron/` are git-ignored and disposable.
-- The overlay in `@osiris/branding/product-overlay` is applied on top of the
+- The overlay in `@osiris-studio/branding/product-overlay` is applied on top of the
   shipped `product.json`, **keeping** upstream's `builtInExtensions`, integrity
   `checksums`, `commit`/`version` and the working Open VSX gallery template.
 - Archives are **portable and unsigned** — an alpha convenience, not installers.

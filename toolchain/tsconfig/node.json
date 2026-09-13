@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "@osiris/tsconfig/node",
+  "display": "@osiris-studio/tsconfig/node",
   "extends": "./base.json",
   "compilerOptions": {
     "module": "NodeNext",

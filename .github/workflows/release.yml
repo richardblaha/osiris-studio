@@ -80,7 +80,7 @@ jobs:
           fail_on_unmatched_files: true
           files: dist/*
           body: |
-            Osiris IDE ${{ github.ref_name }}
+            Osiris Studio ${{ github.ref_name }}
 
             See `CHANGELOG.md` for the full change list.
 

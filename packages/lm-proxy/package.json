@@ -1,5 +1,5 @@
 {
-  "name": "@osiris/lm-proxy",
+  "name": "@osiris-studio/lm-proxy",
   "version": "0.1.0",
   "private": true,
   "description": "An OpenAI-compatible HTTP shim over an editor Language Model API (VS Code / Copilot Chat), so a container-side agent gets its models from the editor.",
@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "@richardblaha/agent-core": "^0.1.0",
-    "@osiris/tsconfig": "workspace:*",
+    "@osiris-studio/tsconfig": "workspace:*",
     "@types/node": "^22.7.5",
     "eslint": "^9.12.0",
     "rimraf": "^6.0.1",

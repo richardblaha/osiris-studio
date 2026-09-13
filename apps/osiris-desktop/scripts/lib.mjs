@@ -70,12 +70,12 @@ export async function readUpstreamConfig() {
   };
 }
 
-/** Load the Osiris product.json overlay from @osiris/branding. */
+/** Load the Osiris product.json overlay from @osiris-studio/branding. */
 export async function readProductOverlay() {
   const require = createRequire(import.meta.url);
   let overlayPath;
   try {
-    overlayPath = require.resolve('@osiris/branding/product-overlay');
+    overlayPath = require.resolve('@osiris-studio/branding/product-overlay');
   } catch {
     overlayPath = path.join(repoRoot, 'packages', 'branding', 'product.overlay.json');
   }
@@ -110,7 +110,7 @@ export function assertPrepared(platformKey) {
   const dir = stageDir(platformKey);
   if (!existsSync(dir)) {
     throw new Error(
-      `Prebuilt for ${platformKey} not prepared. Run: pnpm --filter @osiris/desktop run prepare:shell`,
+      `Prebuilt for ${platformKey} not prepared. Run: pnpm --filter @osiris-studio/desktop run prepare:shell`,
     );
   }
   return dir;

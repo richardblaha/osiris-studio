@@ -2,9 +2,9 @@
   "name": "osiris-workspace",
   "displayName": "Osiris Workspace",
   "version": "0.1.0",
-  "description": "DevContainer enforcement, the osiris-devcontainer remote authority resolver, and session handover (Handover to Server / Fetch to Local) for Osiris IDE.",
+  "description": "DevContainer enforcement and the osiris-devcontainer remote authority resolver for Osiris Studio.",
   "license": "MIT",
-  "publisher": "osiris-ide",
+  "publisher": "osiris-studio",
   "engines": {
     "vscode": "^1.90.0"
   },
@@ -23,16 +23,6 @@
       {
         "command": "osiris.openFolder",
         "title": "Osiris: Open Folder in DevContainer…",
-        "category": "Osiris"
-      },
-      {
-        "command": "osiris.workspace.suspendSession",
-        "title": "Osiris: Suspend Session",
-        "category": "Osiris"
-      },
-      {
-        "command": "osiris.workspace.resumeSession",
-        "title": "Osiris: Resume Session",
         "category": "Osiris"
       },
       {
@@ -84,26 +74,9 @@
         }
       ]
     },
-    "menus": {
-      "commandPalette": [
-        {
-          "command": "osiris.workspace.resumeSession",
-          "when": "osiris.sessionPhase == Suspended"
-        },
-        {
-          "command": "osiris.workspace.suspendSession",
-          "when": "osiris.sessionPhase != Suspended"
-        }
-      ]
-    },
     "configuration": {
       "title": "Osiris Workspace",
       "properties": {
-        "osiris.devcontainer.enforce": {
-          "type": "boolean",
-          "default": true,
-          "description": "Block folders opened outside an Osiris DevContainer and offer to reopen them inside one."
-        },
         "osiris.devcontainer.serverPort": {
           "type": "number",
           "default": 8000,
@@ -139,7 +112,7 @@
         "osiris.server.url": {
           "type": "string",
           "default": "",
-          "description": "Base URL of the Osiris Server used for session handover (e.g. https://osiris.example.com)."
+          "description": "Base URL of the Osiris Server hosting the crew/backlog/memory API (e.g. https://osiris.example.com)."
         },
         "osiris.server.tokenEnv": {
           "type": "string",
@@ -224,13 +197,13 @@
     "clean": "rimraf dist media/panel.js media/panel.css *.vsix"
   },
   "dependencies": {
-    "@osiris/container-sync": "workspace:*",
-    "@osiris/lm-proxy": "workspace:*",
+    "@osiris-studio/container-sync": "workspace:*",
+    "@osiris-studio/lm-proxy": "workspace:*",
     "@richardblaha/protocol": "^0.1.0",
     "@richardblaha/shared-core": "^0.1.0"
   },
   "devDependencies": {
-    "@osiris/tsconfig": "workspace:*",
+    "@osiris-studio/tsconfig": "workspace:*",
     "@types/node": "^22.7.5",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",

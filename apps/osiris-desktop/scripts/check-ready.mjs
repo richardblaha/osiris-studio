@@ -9,13 +9,13 @@ import { hostPlatformKey, listStaged } from './lib.mjs';
 const staged = await listStaged();
 if (staged.length > 0) {
   console.log(
-    `[osiris-desktop] staged: ${staged.join(', ')} — run \`pnpm --filter @osiris/desktop package\` to repack.`,
+    `[osiris-desktop] staged: ${staged.join(', ')} — run \`pnpm --filter @osiris-studio/desktop package\` to repack.`,
   );
 } else {
   const host = hostPlatformKey();
   console.log(
     `[osiris-desktop] nothing staged (expected in CI/dev only).\n` +
-      `  pnpm --filter @osiris/desktop run prepare:shell${host ? '' : ' -- <platform-key>'}\n` +
-      `  pnpm --filter @osiris/desktop package`,
+      `  pnpm --filter @osiris-studio/desktop run prepare:shell${host ? '' : ' -- <platform-key>'}\n` +
+      `  pnpm --filter @osiris-studio/desktop package`,
   );
 }

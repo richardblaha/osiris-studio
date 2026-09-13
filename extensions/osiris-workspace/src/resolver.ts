@@ -3,7 +3,7 @@ import { type Exec, findByLabel, startWebIde, wake } from './docker-cli.js';
 
 const log = createLogger('workspace:resolver');
 
-/** id-labels set by `@osiris/container-sync`'s `ensureDevContainer`. */
+/** id-labels set by `@osiris-studio/container-sync`'s `ensureDevContainer`. */
 export const HASH_LABEL = 'com.osiris.devcontainer.hash';
 export const PORT_LABEL = 'com.osiris.devcontainer.port';
 
