@@ -18,7 +18,7 @@ test('mergeDeep does not mutate its inputs', () => {
 
 test('product overlay loads and targets Open VSX', async () => {
   const overlay = await readProductOverlay();
-  assert.equal(overlay.nameLong, 'Osiris IDE');
+  assert.equal(overlay.nameLong, 'Osiris Studio');
   assert.equal(overlay.enableTelemetry, false);
   assert.match(overlay.extensionsGallery.serviceUrl, /open-vsx\.org/);
 });

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "name": "Osiris Web IDE (openvscode-server)",
   "description": "Installs openvscode-server plus an `osiris-web-ide` launcher, so an Osiris DevContainer exposes a VS Code server for the remote authority resolver to connect to.",
-  "documentationURL": "https://github.com/osiris-ide/osiris/tree/main/features/src/web-ide",
+  "documentationURL": "https://github.com/osiris-studio/osiris/tree/main/features/src/web-ide",
   "options": {
     "port": {
       "type": "string",

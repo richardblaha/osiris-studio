@@ -26,13 +26,13 @@ jobs:
       - run: pnpm install --frozen-lockfile
         env:
           NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN }}
-      - run: pnpm --filter @osiris/branding build
-      - run: pnpm --filter @osiris/branding render:icons
+      - run: pnpm --filter @osiris-studio/branding build
+      - run: pnpm --filter @osiris-studio/branding render:icons
       # First-party extensions are bundled into the REH server as built-ins by
       # build:shell; package their .vsix first.
       - run: pnpm --filter "./extensions/*" package
-      - run: pnpm --filter @osiris/web run prepare:shell
-      - run: pnpm --filter @osiris/web build:shell
+      - run: pnpm --filter @osiris-studio/web run prepare:shell
+      - run: pnpm --filter @osiris-studio/web build:shell
 
       - name: Inspect build output
         run: |

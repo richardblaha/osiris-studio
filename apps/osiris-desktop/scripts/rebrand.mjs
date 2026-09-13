@@ -1,5 +1,5 @@
 /**
- * Pure transforms for rebranding a VSCodium prebuilt into Osiris IDE.
+ * Pure transforms for rebranding a VSCodium prebuilt into Osiris Studio.
  *
  * We overlay the Osiris product identity onto the shipped `product.json` but
  * deliberately keep a few upstream-owned keys: `builtInExtensions` (their

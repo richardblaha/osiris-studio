@@ -1,14 +1,14 @@
 /**
  * A thin `devcontainer` CLI wrapper for the local (ui) extension host — enough to
  * bring a project's DevContainer up and start its openvscode-server. Heavier
- * Docker work (freeze/thaw) still lives in `@osiris/container-sync`.
+ * Docker work (freeze/thaw) still lives in `@osiris-studio/container-sync`.
  */
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import {
   DEFAULT_WEB_IDE_FEATURE,
   ensureDevcontainerConfig,
-} from '@osiris/container-sync/devcontainer-template';
+} from '@osiris-studio/container-sync/devcontainer-template';
 import { createLogger } from '@richardblaha/shared-core';
 import { HASH_LABEL, PORT_LABEL } from './resolver.js';
 

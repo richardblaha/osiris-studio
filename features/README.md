@@ -12,7 +12,7 @@ Osiris injects into project containers.
 `.github/workflows/publish-features.yml` runs
 [`devcontainers/action`](https://github.com/devcontainers/action) on pushes to
 `main` that touch `features/src/**`, publishing each to
-`ghcr.io/osiris-ide/osiris/<id>`.
+`ghcr.io/osiris-studio/osiris/<id>`.
 
 Until first publish, point `EnsureDevContainerInput.webIdeFeatureRef` (or the
 `osiris.devcontainer.webIdeFeature` setting) at a local path:

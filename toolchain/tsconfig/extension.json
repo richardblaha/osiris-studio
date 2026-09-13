@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "@osiris/tsconfig/extension",
+  "display": "@osiris-studio/tsconfig/extension",
   "//": "Type-checking config for VS Code extensions. Emit is done by esbuild (CJS bundle); tsc runs with --noEmit.",
   "extends": "./base.json",
   "compilerOptions": {

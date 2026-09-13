@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import type { LmChatRequest, LmChunk, LmModelBridge, LmModelInfo } from '@osiris/lm-proxy';
+import type { LmChatRequest, LmChunk, LmModelBridge, LmModelInfo } from '@osiris-studio/lm-proxy';
 
 /** True when the running VS Code exposes the stable Language Model API. */
 export function hasLanguageModelApi(): boolean {

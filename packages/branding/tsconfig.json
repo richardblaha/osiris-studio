@@ -1,5 +1,5 @@
 {
-  "extends": "@osiris/tsconfig/base.json",
+  "extends": "@osiris-studio/tsconfig/base.json",
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",

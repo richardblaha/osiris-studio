@@ -6,12 +6,12 @@
 import { execFileSync, spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
-import { bundleBuiltinExtensions } from '@osiris/branding/bundle-extensions';
+import { bundleBuiltinExtensions } from '@osiris-studio/branding/bundle-extensions';
 import { readUpstreamConfig, rehBuildDir, repoRoot } from './lib.mjs';
 
 const { checkoutDir } = await readUpstreamConfig();
 if (!existsSync(checkoutDir)) {
-  throw new Error('Run: pnpm --filter @osiris/web run prepare:shell');
+  throw new Error('Run: pnpm --filter @osiris-studio/web run prepare:shell');
 }
 
 const env = { ...process.env, OSIRIS_TELEMETRY: 'off', NODE_OPTIONS: '--max-old-space-size=8192' };

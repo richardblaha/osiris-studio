@@ -19,7 +19,7 @@ import { packRpm } from './pack-rpm.mjs';
 
 const staged = await listStaged();
 if (staged.length === 0) {
-  throw new Error('Nothing staged. Run: pnpm --filter @osiris/desktop run prepare:shell');
+  throw new Error('Nothing staged. Run: pnpm --filter @osiris-studio/desktop run prepare:shell');
 }
 
 const { release } = await readUpstreamConfig();

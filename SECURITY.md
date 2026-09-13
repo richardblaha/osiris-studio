@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Osiris IDE is pre-1.0. Only the latest tagged release and `main` receive
+Osiris Studio is pre-1.0. Only the latest tagged release and `main` receive
 security fixes.
 
 | Version           | Supported |
@@ -15,8 +15,8 @@ security fixes.
 
 **Do not open a public issue for security problems.**
 
-Use GitHub's [private vulnerability reporting](https://github.com/osiris-ide/osiris/security/advisories/new)
-or email **security@osiris-ide.org** (PGP key in `SECURITY.asc` at the repo root
+Use GitHub's [private vulnerability reporting](https://github.com/osiris-studio/osiris/security/advisories/new)
+or email **security@osiris-studio.org** (PGP key in `SECURITY.asc` at the repo root
 of a signed release).
 
 Please include:

@@ -20,7 +20,7 @@
 export const APP_PREFIX = 'usr/share/osiris';
 
 /**
- * A freedesktop `.desktop` entry for Osiris IDE.
+ * A freedesktop `.desktop` entry for Osiris Studio.
  *
  * @param {object} [opts]
  * @param {string} [opts.exec]  the `Exec=` command (AppImage: `osiris`, snap: `osiris`)
@@ -29,9 +29,9 @@ export function desktopEntry({ exec = 'osiris' } = {}) {
   return [
     '[Desktop Entry]',
     'Type=Application',
-    'Name=Osiris IDE',
+    'Name=Osiris Studio',
     'GenericName=Text Editor',
-    'Comment=Osiris IDE — a rebranded VSCodium build',
+    'Comment=Osiris Studio — a rebranded VSCodium build',
     `Exec=${exec} %F`,
     'Icon=osiris',
     'Terminal=false',
@@ -81,7 +81,7 @@ unset ELECTRON_RUN_AS_NODE ELECTRON_NO_ATTACH_CONSOLE VSCODE_PORTABLE
  */
 export function appRunScript() {
   return `#!/bin/sh
-# Osiris IDE — AppImage entrypoint
+# Osiris Studio — AppImage entrypoint
 HERE="$(dirname "$(readlink -f "$0")")"
 APP="$HERE/${APP_PREFIX}"
 export PATH="$APP/bin:$PATH"
@@ -116,9 +116,9 @@ exec "$APP/osiris" $SANDBOX_FLAG "$@"
 export function snapMeta(version, grade = 'stable') {
   return `name: osiris
 version: '${version}'
-summary: Osiris IDE — a rebranded VSCodium build
+summary: Osiris Studio — a rebranded VSCodium build
 description: |
-  Osiris IDE is a rebrand of the VSCodium prebuilt: the same editor, with the
+  Osiris Studio is a rebrand of the VSCodium prebuilt: the same editor, with the
   Osiris product identity, icons and Open VSX gallery.
 
   Installed with classic confinement — it has full access to the host, exactly
@@ -229,11 +229,11 @@ Version: ${version}
 Section: devel
 Priority: optional
 Architecture: ${arch}
-Maintainer: Osiris IDE <noreply@osiris.dev>
+Maintainer: Osiris Studio <noreply@osiris.dev>
 Depends: ${depends}
-Homepage: https://github.com/osiris-ide/osiris
-Description: Osiris IDE — a rebranded VSCodium build
- Osiris IDE is a rebrand of the VSCodium prebuilt: the same editor, with the
+Homepage: https://github.com/osiris-studio/osiris
+Description: Osiris Studio — a rebranded VSCodium build
+ Osiris Studio is a rebrand of the VSCodium prebuilt: the same editor, with the
  Osiris product identity, icons and Open VSX gallery. Requires a working
  Docker (or Podman) install — Osiris always delegates project/session work to
  a local kind Kubernetes cluster, and kind itself runs on top of Docker.
@@ -263,14 +263,14 @@ AutoReqProv: no
 Name: osiris
 Version: ${version}
 Release: ${release}
-Summary: Osiris IDE — a rebranded VSCodium build
+Summary: Osiris Studio — a rebranded VSCodium build
 License: MIT
-URL: https://github.com/osiris-ide/osiris
+URL: https://github.com/osiris-studio/osiris
 BuildArch: ${arch}
 ${requires}
 
 %description
-Osiris IDE is a rebrand of the VSCodium prebuilt: the same editor, with the
+Osiris Studio is a rebrand of the VSCodium prebuilt: the same editor, with the
 Osiris product identity, icons and Open VSX gallery. Requires a working
 Docker (or Podman) install -- Osiris always delegates project/session work to
 a local kind Kubernetes cluster, and kind itself runs on top of Docker.

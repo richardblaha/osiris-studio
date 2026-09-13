@@ -1,4 +1,4 @@
-# @osiris/container-sync
+# @osiris-studio/container-sync
 
 Container mobility for the **session handover** protocol: DevContainer
 lifecycle, freeze/thaw of a running session, image commit/push and workspace-
@@ -15,7 +15,7 @@ volume transfer. Wire types come from [`@richardblaha/protocol`](../protocol).
 
 ```ts
 import Docker from 'dockerode';
-import { freeze, thawInPlace, sessionImageRef } from '@osiris/container-sync';
+import { freeze, thawInPlace, sessionImageRef } from '@osiris-studio/container-sync';
 
 const docker = new Docker();
 try {

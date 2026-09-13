@@ -1,4 +1,4 @@
-import osirisConfig from '@osiris/eslint-config';
+import osirisConfig from '@osiris-studio/eslint-config';
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [

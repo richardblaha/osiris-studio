@@ -1,5 +1,5 @@
 {
-  "name": "@osiris/container-sync",
+  "name": "@osiris-studio/container-sync",
   "version": "0.1.0",
   "private": true,
   "description": "Container mobility for Osiris: DevContainer lifecycle (build, template, identity hashing).",
@@ -35,7 +35,7 @@
     "execa": "^9.5.0"
   },
   "devDependencies": {
-    "@osiris/tsconfig": "workspace:*",
+    "@osiris-studio/tsconfig": "workspace:*",
     "@types/dockerode": "^4.0.1",
     "@types/node": "^22.7.5",
     "eslint": "^9.12.0",

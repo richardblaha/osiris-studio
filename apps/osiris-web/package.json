@@ -1,8 +1,8 @@
 {
-  "name": "@osiris/web",
+  "name": "@osiris-studio/web",
   "version": "0.1.0",
   "private": true,
-  "description": "Browser-served Osiris IDE runtime (OpenVSCode Server pattern).",
+  "description": "Browser-served Osiris Studio runtime (OpenVSCode Server pattern).",
   "license": "MIT",
   "type": "module",
   "bin": {
@@ -14,12 +14,12 @@
     "build:shell": "node scripts/build.mjs",
     "start": "node server/index.mjs",
     "lint": "eslint scripts server",
-    "typecheck": "echo \"@osiris/web: plain .mjs, nothing to typecheck\"",
+    "typecheck": "echo \"@osiris-studio/web: plain .mjs, nothing to typecheck\"",
     "test": "node --test \"scripts/**/*.test.mjs\" \"server/**/*.test.mjs\"",
     "clean": "rimraf .build"
   },
   "dependencies": {
-    "@osiris/branding": "workspace:*"
+    "@osiris-studio/branding": "workspace:*"
   },
   "devDependencies": {
     "eslint": "^9.12.0",

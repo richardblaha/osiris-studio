@@ -12,14 +12,14 @@ import {
 
 test('curateOverlayForPrebuilt drops upstream-owned keys', () => {
   const overlay = {
-    nameLong: 'Osiris IDE',
+    nameLong: 'Osiris Studio',
     builtInExtensions: [],
     extensionsGallery: { serviceUrl: 'x' },
     checksums: { a: 'b' },
     enableTelemetry: false,
   };
   const out = curateOverlayForPrebuilt(overlay);
-  assert.equal(out.nameLong, 'Osiris IDE');
+  assert.equal(out.nameLong, 'Osiris Studio');
   assert.equal(out.enableTelemetry, false);
   for (const k of PREBUILT_PROTECTED_KEYS) assert.ok(!(k in out), `${k} should be dropped`);
 });
@@ -35,7 +35,7 @@ test('brandProductJson keeps the prebuilt bundled extensions + checksums', () =>
   };
   const overlay = {
     nameShort: 'Osiris',
-    nameLong: 'Osiris IDE',
+    nameLong: 'Osiris Studio',
     applicationName: 'osiris',
     builtInExtensions: [],
     checksums: {},
@@ -44,7 +44,7 @@ test('brandProductJson keeps the prebuilt bundled extensions + checksums', () =>
 
   const branded = brandProductJson(upstream, overlay, mergeDeep);
 
-  assert.equal(branded.nameLong, 'Osiris IDE');
+  assert.equal(branded.nameLong, 'Osiris Studio');
   assert.equal(branded.applicationName, 'osiris');
   assert.equal(branded.enableTelemetry, false);
   assert.deepEqual(branded.builtInExtensions, upstream.builtInExtensions, 'bundled set preserved');

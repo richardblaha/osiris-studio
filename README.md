@@ -1,12 +1,12 @@
 <div align="center">
 
-<img src="packages/branding/assets/osiris.svg" width="120" alt="Osiris IDE" />
+<img src="packages/branding/assets/osiris.svg" width="120" alt="Osiris Studio" />
 
-# Osiris IDE
+# Osiris Studio
 
 **A custom, open-source developer platform built from VS Code (Code - OSS / VSCodium core) — for desktop and the browser.**
 
-[![CI](https://github.com/richardblaha/osiris-ide/actions/workflows/ci.yml/badge.svg)](https://github.com/richardblaha/osiris-ide/actions/workflows/ci.yml)
+[![CI](https://github.com/richardblaha/osiris-studio/actions/workflows/ci.yml/badge.svg)](https://github.com/richardblaha/osiris-studio/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 
 </div>
@@ -15,7 +15,7 @@
 
 ## What is this?
 
-Osiris IDE is a **downstream distribution** of [Code - OSS](https://github.com/microsoft/vscode)
+Osiris Studio is a **downstream distribution** of [Code - OSS](https://github.com/microsoft/vscode)
 (assembled through the [VSCodium](https://github.com/VSCodium/vscodium) pipeline) with:
 
 - **Osiris branding** — product name, icons, theme defaults (`Osiris Dark` / `Osiris Light`).
@@ -36,7 +36,7 @@ This is the IDE half of Osiris. The agent/platform half — CLI, `osiris-kind-op
 ## Repository layout
 
 ```text
-osiris-ide/
+osiris-studio/
 ├── apps/
 │   ├── osiris-desktop/   # Electron wrapper, OS packaging, branding entrypoint
 │   └── osiris-web/       # Web runtime / standalone server
@@ -105,6 +105,6 @@ pnpm package      # produce .vsix / dist_electron artifacts
 
 ## License
 
-MIT — see [LICENSE](LICENSE). Osiris IDE is a downstream distribution built from
+MIT — see [LICENSE](LICENSE). Osiris Studio is a downstream distribution built from
 Microsoft's Code - OSS via the VSCodium build pipeline; the upstream source is fetched
 at build time and is not redistributed within this repository.

@@ -1,10 +1,10 @@
 {
-  "name": "@osiris/branding",
+  "name": "@osiris-studio/branding",
   "displayName": "Osiris Branding",
   "version": "1.0.0",
-  "description": "Osiris IDE branding: icons, colour themes, product.json overlay and shared asset metadata.",
+  "description": "Osiris Studio branding: icons, colour themes, product.json overlay and shared asset metadata.",
   "license": "MIT",
-  "publisher": "osiris-ide",
+  "publisher": "osiris-studio",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -62,7 +62,7 @@
     }
   },
   "devDependencies": {
-    "@osiris/tsconfig": "workspace:*",
+    "@osiris-studio/tsconfig": "workspace:*",
     "@types/node": "^22.7.5",
     "@vscode/vsce": "^3.1.1",
     "eslint": "^9.12.0",
