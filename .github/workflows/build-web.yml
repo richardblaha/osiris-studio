@@ -97,6 +97,32 @@ jobs:
       - uses: actions/checkout@v4
       - uses: docker/setup-buildx-action@v3
 
+      # server-bundle already did the expensive part (clone OpenVSCode Server,
+      # npm ci, gulp build) natively on the runner; reuse that artifact instead
+      # of repeating it inside the Docker build (redundant, and prone to
+      # failing under buildkit's sandboxed container — disk/memory pressure
+      # from doing the whole multi-GB build twice in one release run).
+      #
+      # Extracted entirely outside the repo (not under `context: .`) and fed
+      # to the build as a separate named context (see `build-contexts` below):
+      # apps/osiris-web/.dockerignore's `**/.build` and `**/node_modules`
+      # would otherwise strip this out of the main context — it's normally
+      # produced *inside* a Docker build stage, which bypasses .dockerignore
+      # entirely; there's no such stage here anymore, and the REH bundle ships
+      # its own node_modules (native modules gulp can't bundle, e.g. node-pty).
+      - name: Download server bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: osiris-web-server
+          path: /tmp/osiris-web-server-artifact
+
+      - name: Extract server bundle
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/osiris-web-server-extracted
+          tar -xzf /tmp/osiris-web-server-artifact/osiris-web-server.tar.gz -C /tmp/osiris-web-server-extracted
+          ls -la /tmp/osiris-web-server-extracted
+
       - name: Log in to GHCR
         if: inputs.publish
         uses: docker/login-action@v3
@@ -128,6 +154,8 @@ jobs:
           DOCKER_BUILD_RECORD_UPLOAD: false
         with:
           context: .
+          build-contexts: |
+            reh-bundle=/tmp/osiris-web-server-extracted
           file: apps/osiris-web/Dockerfile
           push: ${{ inputs.publish }}
           tags: ${{ steps.meta.outputs.tags }}

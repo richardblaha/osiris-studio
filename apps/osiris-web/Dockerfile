@@ -1,26 +1,20 @@
 # syntax=docker/dockerfile:1
 
-# ---- build stage: clone upstream, brand it, build the web server ----
-FROM node:22-bookworm AS build
-WORKDIR /osiris
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-      git python3 make g++ pkg-config \
-      libx11-dev libxkbfile-dev libsecret-1-dev libkrb5-dev ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN corepack enable
-
-# Workspace context (repo root is the build context).
-COPY . .
-RUN pnpm install --frozen-lockfile --filter @osiris-studio/web... \
-    && pnpm --filter @osiris-studio/branding build \
-    && pnpm --filter @osiris-studio/branding sync:theme \
-    && pnpm --filter @osiris-studio/branding render:icons \
-    && pnpm --filter @osiris-studio/web run prepare:shell \
-    && pnpm --filter @osiris-studio/web build:shell
-
 # ---- runtime stage ----
+#
+# No build stage: the REH server bundle (clone OpenVSCode Server, npm ci,
+# gulp build — network- and toolchain-heavy) is already produced natively by
+# build-web.yml's `server-bundle` job and fed in below as the `reh-bundle`
+# build context (see that job's `docker/build-push-action` step) — a
+# *separate* context, not a subdirectory of `context: .`, so
+# apps/osiris-web/.dockerignore's `**/.build`/`**/node_modules` rules (which
+# would otherwise strip out the bundle, including the native modules gulp
+# can't bundle, e.g. node-pty) never apply to it. Redoing that multi-GB build
+# a second time inside a Docker build stage was redundant and unreliable
+# under buildkit's sandboxed container.
+#
+# Everything else copied below is plain .mjs using only Node built-ins
+# (server/index.mjs, scripts/lib.mjs) — no install step needed in this image.
 FROM node:22-bookworm-slim AS runtime
 LABEL org.opencontainers.image.title="Osiris Studio (web)" \
       org.opencontainers.image.source="https://github.com/osiris-studio/osiris" \
@@ -29,14 +23,15 @@ LABEL org.opencontainers.image.title="Osiris Studio (web)" \
 RUN groupadd --gid 1001 osiris && useradd --uid 1001 --gid osiris --create-home osiris
 WORKDIR /home/osiris/app
 
-# Ship only the runtime wrapper + the built server bundle — not the multi-GB
-# upstream source checkout under .build/server.
-COPY --from=build --chown=osiris:osiris /osiris/apps/osiris-web/server ./apps/osiris-web/server
-COPY --from=build --chown=osiris:osiris /osiris/apps/osiris-web/scripts ./apps/osiris-web/scripts
-COPY --from=build --chown=osiris:osiris /osiris/apps/osiris-web/config ./apps/osiris-web/config
-COPY --from=build --chown=osiris:osiris /osiris/apps/osiris-web/package.json ./apps/osiris-web/package.json
-COPY --from=build --chown=osiris:osiris /osiris/apps/osiris-web/.build/vscode-reh-web-linux-x64 ./apps/osiris-web/.build/vscode-reh-web-linux-x64
-COPY --from=build --chown=osiris:osiris /osiris/packages/branding ./packages/branding
+COPY --chown=osiris:osiris apps/osiris-web/server ./apps/osiris-web/server
+COPY --chown=osiris:osiris apps/osiris-web/scripts ./apps/osiris-web/scripts
+COPY --chown=osiris:osiris apps/osiris-web/config ./apps/osiris-web/config
+COPY --chown=osiris:osiris apps/osiris-web/package.json ./apps/osiris-web/package.json
+COPY --from=reh-bundle --chown=osiris:osiris vscode-reh-web-linux-x64 ./apps/osiris-web/.build/vscode-reh-web-linux-x64
+# Only readProductOverlay()'s fallback path needs this — a static committed
+# file, not the generated theme/icon assets (already baked into the REH
+# bundle above by the native build).
+COPY --chown=osiris:osiris packages/branding/product.overlay.json ./packages/branding/product.overlay.json
 
 ENV OSIRIS_TELEMETRY=off \
     VSCODE_SERVER_DATA_DIR=/home/osiris/.osiris-server \
