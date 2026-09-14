@@ -21,28 +21,50 @@ import { buildWrapperRoot } from './pack-tree.mjs';
 const APP_ID = 'io.osiris.Studio';
 
 export async function packFlatpak(sourceTree, out) {
-  const work = `${out}.flatpak-work`;
+  // Deliberately NOT a sibling of `out` (i.e. not `${out}.flatpak-work`): the
+  // sandboxed flatpak-builder build (bubblewrap, user namespaces) can leave
+  // its `build/` tree containing entries mirrored from host paths like
+  // `/var/run/chrony` that are unreadable from outside that namespace once
+  // the build ends, so `rm -rf` on them can fail with EACCES. Keeping the
+  // scratch dir under `.build/` — outside `dist_electron/` — means a leftover
+  // like that can never land inside the `Osiris-*` glob that CI uploads.
+  const work = path.join(appRoot, '.build', '_tmp', `${path.basename(out)}.flatpak-work`);
   const wrapperRoot = path.join(work, 'wrapper');
   const buildDir = path.join(work, 'build');
   const repoDir = path.join(work, 'repo');
-  await rm(work, { recursive: true, force: true });
+  await cleanup(work);
   await buildWrapperRoot(sourceTree, wrapperRoot);
 
   const manifestPath = path.join(wrapperRoot, `${APP_ID}.json`);
   await writeFile(manifestPath, JSON.stringify(flatpakManifest({ appId: APP_ID }), null, 2));
 
-  execFileSync('flatpak-builder', ['--force-clean', `--repo=${repoDir}`, buildDir, manifestPath], {
-    cwd: wrapperRoot,
-    stdio: 'inherit',
-  });
+  try {
+    execFileSync('flatpak-builder', ['--force-clean', `--repo=${repoDir}`, buildDir, manifestPath], {
+      cwd: wrapperRoot,
+      stdio: 'inherit',
+    });
 
-  await mkdir(path.dirname(out), { recursive: true });
-  await rm(out, { recursive: true, force: true });
-  execFileSync('flatpak', ['build-bundle', repoDir, out, APP_ID], { stdio: 'inherit' });
+    await mkdir(path.dirname(out), { recursive: true });
+    await rm(out, { recursive: true, force: true });
+    execFileSync('flatpak', ['build-bundle', repoDir, out, APP_ID], { stdio: 'inherit' });
+  } finally {
+    // Best-effort: a namespace-remapped leftover under `build/` may not be
+    // removable by this user at all. That's fine now that `work` sits outside
+    // `dist_electron/` — it just won't be cleaned up until the CI runner is
+    // torn down.
+    await cleanup(work);
+  }
 
-  await rm(work, { recursive: true, force: true });
   console.log(`[osiris-desktop] ${path.relative(appRoot, out)}`);
   return out;
+}
+
+async function cleanup(work) {
+  try {
+    await rm(work, { recursive: true, force: true });
+  } catch (err) {
+    console.warn(`[osiris-desktop] flatpak: couldn't fully clean up ${work} — ${err.message}`);
+  }
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
