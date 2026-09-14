@@ -3,6 +3,15 @@ name: Build Web
 on:
   workflow_dispatch:
   workflow_call:
+    inputs:
+      # Explicit input, not github.event_name: inside a reusable workflow,
+      # event_name inherits the *top-level* caller's triggering event (e.g.
+      # "push" from release.yml's own `on: push: tags`), never "workflow_call"
+      # itself — so gating on event_name here silently never publishes.
+      publish:
+        description: 'Push the Docker image + Helm chart to GHCR (a real release, not a CI-only build).'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -76,8 +85,9 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     needs: server-bundle
-    # Only release.yml's tag-triggered call (github.event_name == 'workflow_call')
-    # pushes to GHCR; a manual workflow_dispatch run just builds, for CI-only checks.
+    # Only release.yml's call (with `publish: true`) pushes to GHCR; a manual
+    # workflow_dispatch run (publish defaults to false) just builds, for
+    # CI-only checks.
     permissions:
       contents: read
       packages: write
@@ -88,7 +98,7 @@ jobs:
       - uses: docker/setup-buildx-action@v3
 
       - name: Log in to GHCR
-        if: github.event_name == 'workflow_call'
+        if: inputs.publish
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -100,7 +110,7 @@ jobs:
         run: |
           set -euo pipefail
           image="ghcr.io/${{ github.repository }}/osiris-web"
-          if [[ "${{ github.event_name }}" == "workflow_call" ]]; then
+          if [[ "${{ inputs.publish }}" == "true" ]]; then
             tags="$image:${{ github.ref_name }}"
             # Skip :latest for a prerelease tag (contains a "-", e.g. v1.2.3-beta.1).
             if [[ "${{ github.ref_name }}" != *-* ]]; then
@@ -119,7 +129,7 @@ jobs:
         with:
           context: .
           file: apps/osiris-web/Dockerfile
-          push: ${{ github.event_name == 'workflow_call' }}
+          push: ${{ inputs.publish }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: |
             org.opencontainers.image.version=${{ github.ref_name }}
@@ -143,7 +153,7 @@ jobs:
       - name: Resolve chart version
         id: ver
         run: |
-          if [[ "${{ github.event_name }}" == "workflow_call" ]]; then
+          if [[ "${{ inputs.publish }}" == "true" ]]; then
             echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
             echo "appVersion=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
           else
@@ -166,9 +176,9 @@ jobs:
           if-no-files-found: error
 
       - name: Log in to GHCR (Helm OCI push)
-        if: github.event_name == 'workflow_call'
+        if: inputs.publish
         run: echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Push chart (release only)
-        if: github.event_name == 'workflow_call'
+        if: inputs.publish
         run: helm push dist-helm/*.tgz "oci://ghcr.io/${{ github.repository }}/charts"

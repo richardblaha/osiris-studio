@@ -31,6 +31,8 @@ jobs:
 
   web:
     uses: ./.github/workflows/build-web.yml
+    with:
+      publish: true
     secrets: inherit
 
   desktop:
